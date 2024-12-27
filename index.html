@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Previous head and style sections remain the same -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Special Invitation</title>
     <style>
+        /* All previous styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -99,6 +101,25 @@
 
         .btn-no:hover {
             background: #dee2e6;
+        }
+
+        .transform-to-yes {
+            animation: transformToYes 0.5s forwards;
+        }
+
+        @keyframes transformToYes {
+            0% {
+                background: #e9ecef;
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(0.8) rotate(180deg);
+            }
+            100% {
+                background: #ff6b6b;
+                color: white;
+                transform: scale(1) rotate(360deg);
+            }
         }
 
         #date-details {
@@ -248,6 +269,21 @@
         function handleNo() {
             noCount++;
             
+            // If it's the last response, transform the button
+            if (noCount === responses.length) {
+                // Add transform animation
+                noButton.classList.add('transform-to-yes');
+                
+                // Change button text and functionality after animation
+                setTimeout(() => {
+                    noButton.textContent = "Yes! 😊";
+                    noButton.onclick = showDateDetails;
+                    showDateDetails();
+                }, 500);
+                
+                return;
+            }
+            
             // Remove any existing animations
             noButton.classList.remove('shake', 'shrink', 'rotate', 'bounce');
             
@@ -257,7 +293,7 @@
             noButton.classList.add(randomAnimation);
             
             // Show a different response message
-            if (noCount <= responses.length) {
+            if (noCount < responses.length) {
                 noText.style.opacity = '1';
                 noText.textContent = responses[noCount - 1];
                 
@@ -271,11 +307,6 @@
             setTimeout(() => {
                 noButton.classList.remove(randomAnimation);
             }, 500);
-            
-            // If they've clicked "no" too many times, automatically show date details
-            if (noCount > responses.length) {
-                showDateDetails();
-            }
         }
 
         function createHeartsAnimation() {
