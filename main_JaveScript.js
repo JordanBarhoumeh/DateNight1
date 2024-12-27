@@ -25,3 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("rsvp-button").addEventListener("click", () => {
     alert("Yay! Can't wait to see you there! ❤️");
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("rsvp-button");
+
+    button.addEventListener("click", () => {
+        alert("Yay! Can’t wait to see you there! 💖");
+    });
+});
+
