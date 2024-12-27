@@ -77,6 +77,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            position: relative;
         }
 
         .btn-yes {
@@ -93,6 +94,7 @@
         .btn-no {
             background: #e9ecef;
             color: #495057;
+            transition: all 0.3s ease;
         }
 
         .btn-no:hover {
@@ -108,9 +110,68 @@
             animation: fadeIn 1s ease;
         }
 
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .shrink {
+            animation: shrink 0.5s ease-in-out;
+        }
+
+        .rotate {
+            animation: rotate 0.5s ease-in-out;
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes shrink {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.8); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hearts-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        #no-text {
+            position: absolute;
+            font-size: 0.8em;
+            color: #ff6b6b;
+            width: 100%;
+            left: 0;
+            bottom: -25px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         @media (max-width: 480px) {
@@ -124,23 +185,12 @@
 
             .buttons {
                 flex-direction: column;
-                gap: 10px;
+                gap: 30px;
             }
 
             .btn {
                 width: 100%;
             }
-        }
-
-        .hearts-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            display: none;
         }
     </style>
 </head>
@@ -160,7 +210,10 @@
         
         <div class="buttons">
             <button class="btn btn-yes" onclick="showDateDetails()">Yes! 😊</button>
-            <button class="btn btn-no" id="no-btn" onmouseover="moveButton(this)">No 😢</button>
+            <div style="position: relative;">
+                <button class="btn btn-no" id="no-btn" onclick="handleNo()">No 😢</button>
+                <div id="no-text"></div>
+            </div>
         </div>
 
         <div id="date-details">
@@ -173,21 +226,56 @@
     </div>
 
     <script>
+        let noCount = 0;
+        const noButton = document.getElementById('no-btn');
+        const noText = document.getElementById('no-text');
+        const responses = [
+            "Are you sure? 🥺",
+            "Really really sure? 😢",
+            "Pretty please? 🥹",
+            "Just think about it! 💭",
+            "Don't break my heart! 💔",
+            "Give it a chance! ✨",
+            "Changed your mind yet? 😊",
+            "Last chance! 🌟"
+        ];
+
         function showDateDetails() {
             document.getElementById('date-details').style.display = 'block';
             createHeartsAnimation();
         }
 
-        function moveButton(button) {
-            const container = document.querySelector('.container');
-            const containerRect = container.getBoundingClientRect();
+        function handleNo() {
+            noCount++;
             
-            const newX = Math.random() * (containerRect.width - button.offsetWidth);
-            const newY = Math.random() * (containerRect.height - button.offsetHeight);
+            // Remove any existing animations
+            noButton.classList.remove('shake', 'shrink', 'rotate', 'bounce');
             
-            button.style.position = 'absolute';
-            button.style.left = `${newX}px`;
-            button.style.top = `${newY}px`;
+            // Add a random animation
+            const animations = ['shake', 'shrink', 'rotate', 'bounce'];
+            const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+            noButton.classList.add(randomAnimation);
+            
+            // Show a different response message
+            if (noCount <= responses.length) {
+                noText.style.opacity = '1';
+                noText.textContent = responses[noCount - 1];
+                
+                // Hide the message after 2 seconds
+                setTimeout(() => {
+                    noText.style.opacity = '0';
+                }, 2000);
+            }
+            
+            // Remove the animation class after it completes
+            setTimeout(() => {
+                noButton.classList.remove(randomAnimation);
+            }, 500);
+            
+            // If they've clicked "no" too many times, automatically show date details
+            if (noCount > responses.length) {
+                showDateDetails();
+            }
         }
 
         function createHeartsAnimation() {
